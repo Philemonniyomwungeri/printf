@@ -23,7 +23,8 @@
 struct fmt
 {
 char fmt;
-int (*fn)(va_list, char[], int, int, int, int);
+int handle_print(const char *fmt, va_list list, char buffer[], int flags, int width, int precision, int size);
+int (*print_fn)(va_list, char[], int, int, int, int);
 };
 /**
 * typedef struct fmt fmt_t - Struct op
@@ -37,7 +38,7 @@ int handle_print(const char *fmt, int *i,
 va_list list, char buffer[], int flags, int width, int precision, int size);
 /****************** FUNCTIONS ******************/
 /* Funtions to print chars and strings */
-int print_char(va_list types, char buffer[],
+int _print_char(va_list types, char buffer[],
 int flags, int width, int precision, int size);
 int print_string(va_list types, char buffer[],
 int flags, int width, int precision, int size);
