@@ -1,0 +1,98 @@
+#include "main.h"
+
+/**
+ * _printf - Printf function
+ * @format: format.
+ * Return: Printed chars.
+ */
+int _printf(const char *format, ...)
+{
+    int i, printed = 0, printed_chars = 0;
+    int flags, width, precision, size, buff_ind = 0;
+    va_list list;
+    char buffer[BUFF_SIZE];
+
+    if (format == NULL)
+        return (-1);
+
+    va_start(list, format);
+
+    for (i = 0; format && format[i] != '\0'; i++)
+    {
+        if (format[i] != '%')
+        {
+            buffer[buff_ind++] = format[i];
+            if (buff_ind == BUFF_SIZE)
+                print_buffer(buffer, &buff_ind);
+
+            printed_chars++;
+        }
+        else
+        {
+            print_buffer(buffer, &buff_ind);
+            flags = get_flags(format, &i);
+            width = get_width(format, &i, list);
+            precision = get_precision(format, &i, list);
+            size = get_size(format, &i);
+            ++i;
+
+            if (format[i] == 'b')
+            {
+                printed = print_binary(va_arg(list, unsigned int), buffer, &buff_ind);
+            }
+            else
+            {
+                printed = handle_print(format, &i, list, buffer, flags, width, precision, size);
+            }
+
+            if (printed == -1)
+                return (-1);
+
+            printed_chars += printed;
+        }
+    }
+
+    print_buffer(buffer, &buff_ind);
+    va_end(list);
+
+    return (printed_chars);
+}
+
+/**
+ * print_binary - Convert unsigned int to binary and add to buffer
+ * @n: Unsigned int to convert to binary
+ * @buffer: Array of chars
+ * @buff_ind: Index at which to add the binary representation
+ * Return: Number of characters added to the buffer
+ */
+int print_binary(unsigned int n, char buffer[], int *buff_ind)
+{
+    int binary_digits = 0;
+    int printed_chars = 0;
+    unsigned int temp = n;
+
+    while (temp > 0)
+    {
+        temp /= 2;
+        binary_digits++;
+    }
+
+    if (n == 0)
+    {
+        buffer[(*buff_ind)++] = '0';
+        printed_chars++;
+    }
+    else
+    {
+        while (binary_digits > 0)
+        {
+            temp = n >> (binary_digits - 1);
+            buffer[(*buff_ind)++] = (temp & 1) + '0';
+            printed_chars++;
+            binary_digits--;
+        }
+    }
+
+    return (printed_chars);
+}
+
